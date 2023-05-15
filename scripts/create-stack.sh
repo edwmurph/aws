@@ -1,6 +1,6 @@
 #!/bin/bash
-#
-USAGE='USAGE: ./create-stack.sh <STACK_NAME>'
+
+USAGE='USAGE: npm run create-stack -- <STACK_NAME>'
 STACK_NAME=${1?$USAGE}
 
 aws cloudformation create-stack \

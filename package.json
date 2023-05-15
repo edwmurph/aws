@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "create-stack": "./scripts/create-stack.sh",
+    "delete-stack": "./scripts/delete-stack.sh",
+    "detect-stack-drift": "./scripts/detect-stack-drift.sh"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE='USAGE: ./detect-stack-drift.sh <STACK_NAME> <STACK_DRIFT_DETECTION_ID?>'
+USAGE='USAGE: npm run detect-stack-drift -- <STACK_NAME> <STACK_DRIFT_DETECTION_ID?>'
 STACK_NAME=${1?$USAGE}
 STACK_DRIFT_DETECTION_ID=${2}
 
