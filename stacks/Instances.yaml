@@ -1,0 +1,14 @@
+Description: Deploys instances
+
+Resources:
+  Public1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0889a44b331db0194
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeleteOnTermination: true
+          DeviceIndex: 0
+          SubnetId:
+            Fn::ImportValue: VPC-PublicSubnet1

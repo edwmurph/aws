@@ -10,7 +10,7 @@ aws cloudformation create-stack \
 
 STACK_STATUS='init'
 
-while [ $STACK_STATUS != 'CREATE_COMPLETE' ]; do
+while [ $STACK_STATUS != 'CREATE_COMPLETE' ] && [ $STACK_STATUS != 'ROLLBACK_COMPLETE' ]; do
   STACK_STATUS=$(aws cloudformation describe-stacks \
     --profile root \
     --stack-name $STACK_NAME \
@@ -18,3 +18,8 @@ while [ $STACK_STATUS != 'CREATE_COMPLETE' ]; do
   echo "STACK_STATUS: $STACK_STATUS"
   sleep 2
 done
+
+aws cloudformation describe-stacks \
+  --stack-name $STACK_NAME \
+  --no-cli-pager \
+  --profile root
