@@ -211,12 +211,12 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: RDSAccess
-      GroupDescription: "Allows RDS Ingress"
+      GroupDescription: "Allows RDS Ingress from within the VPC"
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - FromPort: 5432
           ToPort: 5432
-          IpProtocol: "-1"
+          IpProtocol: tcp
           CidrIp: !Ref VPCCidr
 
 Outputs:

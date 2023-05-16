@@ -14,7 +14,7 @@ Resources:
         Fn::Base64:
           !Sub |
             #!/bin/bash
-            sudo yum install postgresql15
+            sudo yum -y install postgresql15
 
 Outputs:
   Public1Ip:

@@ -13,6 +13,7 @@ Resources:
       DBSubnetGroupName: !ImportValue VPC-PrivateSubnetGroup
       VPCSecurityGroups:
         - !ImportValue VPC-RDSAccess
+
 Outputs:
   Endpoint:
     Description: Endpoint
