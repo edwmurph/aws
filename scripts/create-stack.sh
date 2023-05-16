@@ -20,7 +20,7 @@ while [ $STACK_STATUS != 'CREATE_COMPLETE' ] && [ $STACK_STATUS != 'ROLLBACK_COM
     --stack-name $STACK_NAME \
     | jq -r '.Stacks[0].StackStatus')
   echo "STACK_STATUS: $STACK_STATUS"
-  sleep 3
+  sleep 5
 done
 
 aws cloudformation describe-stacks \
