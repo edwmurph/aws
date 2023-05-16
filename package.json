@@ -14,5 +14,7 @@
   },
   "author": "edwmurph",
   "license": "ISC",
-  "homepage": "https://github.com/edwmurph/aws#readme"
+  "homepage": "https://github.com/edwmurph/aws#readme",
+  "dependencies": {
+  }
 }
