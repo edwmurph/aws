@@ -1,5 +1,14 @@
 Description: Deploys instances
 
+Parameters:
+  UserData:
+    Type: String
+    Default: |
+      #!/bin/bash
+      sudo yum -y update
+      sudo yum -y install postgresql15
+      curl https://raw.githubusercontent.com/edwmurph/configs/master/dotfiles/ec2-bashrc >> /home/ec2-user/.bashrc
+
 Resources:
   Public1:
     Type: AWS::EC2::Instance
@@ -11,12 +20,7 @@ Resources:
         - !ImportValue VPC-SSHAccess
       SubnetId: !ImportValue VPC-PublicSubnet1
       UserData:
-        Fn::Base64:
-          !Sub |
-            #!/bin/bash
-            sudo yum -y update
-            sudo yum -y install postgresql15
-            curl https://raw.githubusercontent.com/edwmurph/configs/master/dotfiles/ec2-bashrc >> /home/ec2-user/.bashrc
+        Fn::Base64: !Ref UserData
 
 Outputs:
   Public1Ip:
