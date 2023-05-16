@@ -17,7 +17,7 @@ DETECTION_STATUS='DETECTION_IN_PROGRESS'
 
 while [ $DETECTION_STATUS == 'DETECTION_IN_PROGRESS' ]; do
   echo 'detection in progress...'
-  sleep 2
+  sleep 3
   RESULT=$(aws cloudformation describe-stack-drift-detection-status \
     --stack-drift-detection-id $STACK_DRIFT_DETECTION_ID \
     --profile root)

@@ -14,7 +14,7 @@ while [ -n "$STACK_STATUS" ] && [ $STACK_STATUS == 'DELETE_IN_PROGRESS' ]; do
     --profile root 2>/dev/null \
     | jq -r '.Stacks[0].StackStatus')
   echo "STACK_STATUS: $STACK_STATUS"
-  sleep 2
+  sleep 3
 done
 
 echo 'Stack deleted!'

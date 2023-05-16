@@ -8,6 +8,10 @@ aws cloudformation create-stack \
   --template-body file://stacks/$STACK_NAME.yaml \
   --profile root
 
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+
 STACK_STATUS='init'
 
 while [ $STACK_STATUS != 'CREATE_COMPLETE' ] && [ $STACK_STATUS != 'ROLLBACK_COMPLETE' ]; do
@@ -16,7 +20,7 @@ while [ $STACK_STATUS != 'CREATE_COMPLETE' ] && [ $STACK_STATUS != 'ROLLBACK_COM
     --stack-name $STACK_NAME \
     | jq -r '.Stacks[0].StackStatus')
   echo "STACK_STATUS: $STACK_STATUS"
-  sleep 2
+  sleep 3
 done
 
 aws cloudformation describe-stacks \
