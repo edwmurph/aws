@@ -14,7 +14,9 @@ Resources:
         Fn::Base64:
           !Sub |
             #!/bin/bash
+            sudo yum -y update
             sudo yum -y install postgresql15
+            curl https://raw.githubusercontent.com/edwmurph/configs/master/dotfiles/ec2-bashrc >> /home/ec2-user/.bashrc
 
 Outputs:
   Public1Ip:
