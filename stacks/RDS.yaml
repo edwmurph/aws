@@ -1,0 +1,19 @@
+Description: deploys an RDS instance
+
+Resources:
+  RDS:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    Properties:
+      AllocatedStorage: '5'
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      MasterUsername: postgres
+      MasterUserPassword: postgres
+      DBSubnetGroupName: !ImportValue VPC-PrivateSubnetGroup
+      VPCSecurityGroups:
+        - !ImportValue VPC-RDSAccess
+Outputs:
+  Endpoint:
+    Description: Endpoint
+    Value: !GetAtt RDS.Endpoint.Address

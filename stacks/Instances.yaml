@@ -6,9 +6,20 @@ Resources:
     Properties:
       InstanceType: t2.micro
       ImageId: ami-0889a44b331db0194
-      NetworkInterfaces:
-        - AssociatePublicIpAddress: true
-          DeleteOnTermination: true
-          DeviceIndex: 0
-          SubnetId:
-            Fn::ImportValue: VPC-PublicSubnet1
+      KeyName: my-key-pair
+      SecurityGroupIds:
+        - !ImportValue VPC-SSHAccess
+      SubnetId: !ImportValue VPC-PublicSubnet1
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            sudo yum install postgresql15
+
+Outputs:
+  Public1Ip:
+    Description: Public Ip
+    Value:
+      Fn::GetAtt:
+        - Public1
+        - PublicIp
