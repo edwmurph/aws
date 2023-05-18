@@ -1,7 +1,7 @@
 {
   "name": "aws",
   "version": "1.0.0",
-  "description": "",
+  "description": "my collection of cloudformation stacks and utilities",
   "main": "index.js",
   "scripts": {
     "create-stack": "./scripts/create-stack.sh",
