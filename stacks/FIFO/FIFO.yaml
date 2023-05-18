@@ -1,4 +1,5 @@
-Description: SQS Queues
+Description: Provisions an SQS FIFO queue with a Lambda that processes items one at a time
+
 Resources:
   LambdaRole:
     Type: AWS::IAM::Role
@@ -19,7 +20,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       FifoQueue: true
-      VisibilityTimeout: 120
+      VisibilityTimeout: 30
       ContentBasedDeduplication: true
 
   Lambda:
@@ -28,15 +29,16 @@ Resources:
       Handler: index.handler
       Runtime: nodejs16.x
       Role: !GetAtt LambdaRole.Arn
-      Timeout: 120
+      ReservedConcurrentExecutions: 1
+      Timeout: 30
       Code:
         ZipFile: |
           exports.handler = async function(event) {
             const wait = ( ms ) => new Promise( r => setTimeout( r, ms ) );
-            const bodies = event.Records.map( record => record.body );
-            console.log('start', bodies);
+            const events = event.Records.map( record => record.body );
+            console.log('start', events);
             await wait(10e3);
-            console.log('stop', bodies);
+            console.log('stop', events);
             return {
               statusCode: 200,
               body: JSON.stringify('Hello from Lambda!'),
@@ -49,6 +51,8 @@ Resources:
       BatchSize: 1
       EventSourceArn: !GetAtt Queue.Arn
       FunctionName: !GetAtt Lambda.Arn
+      # ScalingConfig:
+      #   MaximumConcurrency: 2
 
 Outputs:
   TestFIFOEndpoint:
