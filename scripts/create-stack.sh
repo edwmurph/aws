@@ -4,8 +4,9 @@ USAGE='USAGE: npm run create-stack -- <STACK_NAME>'
 STACK_NAME=${1?$USAGE}
 
 aws cloudformation create-stack \
+  --capabilities CAPABILITY_IAM \
   --stack-name $STACK_NAME \
-  --template-body file://stacks/$STACK_NAME.yaml \
+  --template-body file://stacks/$STACK_NAME/$STACK_NAME.yaml \
   --profile root
 
 if [ $? -ne 0 ]; then
