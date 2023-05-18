@@ -1,6 +1,18 @@
 Description: deploys an RDS instance
 
 Resources:
+  RDSAccess:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: RDSAccess
+      GroupDescription: "Allows RDS Ingress from within the VPC"
+      VpcId: !ImportValue VPC-VPC
+      SecurityGroupIngress:
+        - FromPort: 5432
+          ToPort: 5432
+          IpProtocol: tcp
+          CidrIp: !ImportValue VPC-VPCCIDR
+
   RDS:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Delete
@@ -12,7 +24,7 @@ Resources:
       MasterUserPassword: postgres
       DBSubnetGroupName: !ImportValue VPC-PrivateSubnetGroup
       VPCSecurityGroups:
-        - !ImportValue VPC-RDSAccess
+        - !Ref RDSAccess
 
 Outputs:
   Endpoint:

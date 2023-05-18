@@ -5,7 +5,7 @@ Description:  This template deploys a VPC, with a pair of public and private sub
   route on the public subnets.
 
 Parameters:
-  VPCCidr:
+  VPCCIDR:
     Description: Please enter the IP range (CIDR notation) for this VPC
     Type: String
     Default: 10.1.0.0/16
@@ -34,7 +34,7 @@ Resources:
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref VPCCidr
+      CidrBlock: !Ref VPCCIDR
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -179,7 +179,7 @@ Resources:
       GroupDescription: "Security group with no ingress rule"
       VpcId: !Ref VPC
 
-  HTTPIngress:
+  WebIngress:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: WebIngress
@@ -207,22 +207,17 @@ Resources:
           IpProtocol: tcp
           CidrIp: 0.0.0.0/0
 
-  RDSAccess:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupName: RDSAccess
-      GroupDescription: "Allows RDS Ingress from within the VPC"
-      VpcId: !Ref VPC
-      SecurityGroupIngress:
-        - FromPort: 5432
-          ToPort: 5432
-          IpProtocol: tcp
-          CidrIp: !Ref VPCCidr
-
 Outputs:
   VPC:
     Description: A reference to the created VPC
     Value: !Ref VPC
+    Export:
+      Name: !Sub "${AWS::StackName}-VPC"
+  VPCCIDR:
+    Description: VPC CIDR
+    Value: !Ref VPCCIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-VPCCIDR"
   PublicSubnet1:
     Description: A reference to the public subnet in the 1st Availability Zone
     Value: !Ref PublicSubnet1
@@ -238,11 +233,6 @@ Outputs:
     Value: !Ref PrivateSubnetGroup
     Export:
       Name: !Sub "${AWS::StackName}-PrivateSubnetGroup"
-  RDSAccess:
-    Description: RDS Instance Security Group
-    Value: !Ref RDSAccess
-    Export:
-      Name: !Sub "${AWS::StackName}-RDSAccess"
   SSHAccess:
     Description: SSH Access Security Group
     Value: !Ref SSHAccess
