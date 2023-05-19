@@ -14,7 +14,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-0889a44b331db0194
+      ImageId: ami-08333bccc35d71140
       KeyName: my-key-pair
       SecurityGroupIds:
         - !ImportValue VPC-SSHAccess

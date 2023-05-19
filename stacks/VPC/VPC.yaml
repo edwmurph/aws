@@ -219,10 +219,15 @@ Outputs:
     Export:
       Name: !Sub "${AWS::StackName}-VPCCIDR"
   PublicSubnet1:
-    Description: A reference to the public subnet in the 1st Availability Zone
+    Description: The public subnet in the 1st Availability Zone
     Value: !Ref PublicSubnet1
     Export:
       Name: !Sub "${AWS::StackName}-PublicSubnet1"
+  PrivateSubnet1:
+    Description: The private subnet in the 1st Availability Zone
+    Value: !Ref PrivateSubnet1
+    Export:
+      Name: !Sub "${AWS::StackName}-PrivateSubnet1"
   PublicSubnetGroup:
     Description: A reference to the public subnets
     Value: !Ref PublicSubnetGroup
