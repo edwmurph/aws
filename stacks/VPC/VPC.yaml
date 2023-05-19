@@ -207,6 +207,13 @@ Resources:
           IpProtocol: tcp
           CidrIp: 0.0.0.0/0
 
+  MyKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: my-key-pair
+      KeyType: rsa
+      PublicKeyMaterial: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCds2ju6dGiH7JZkP0pxfdvFKIczlILhyw8gRa7S/g8H+USviGAoShoAzly6v3I9ngNAiakHaKd3Y2WKCD/3ZuBFfBRN7OCDgjmz+AyWp1TyXXAKKG7IOY4m1TXXCpI1vFJac8idNLdrufe2hNah1aVj5YYyYOH1rX5nnzR6TyICCatPFZCn1TmT5E6myaItkgvAm/A7bmE4OX+KcFV/G2wmFRATMOdADXmgu4I2bAH1yKi5DZ0icOQWocMRLiZDarn3Pnenldf2akUCg6uxkgBipp1T+/iXG9aMYn82vIJQKncsXFBSzmxCvD667a7dueDGo4CV9vGhMXVN4spfO8x my-key-pair'
+
 Outputs:
   VPC:
     Description: A reference to the created VPC
