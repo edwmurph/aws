@@ -2,6 +2,9 @@
   "name": "sam",
   "version": "1.0.0",
   "description": "my collection of SAM apps",
+  "scripts": {
+    "cleanup": "./scripts/cleanup.sh"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/edwmurph/sam.git"
