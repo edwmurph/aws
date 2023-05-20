@@ -1,30 +1,11 @@
-# sam
+# SAM
 
-my collection of SAM applications
+My collection of SAM applications
 
 ## Usage
 
-`cd apps/<APP>`, then:
-
-```bash
-sam build
-```
-
-```bash
-sam validate
-```
-
-```bash
-sam deploy
-```
-
-```bash
-sam logs -n HelloFunction --stack-name serverless-api --tail
-```
-
-```bash
-sam delete --stack-name serverless-api
-```
+- Orchestrate SAM apps: `cd apps/<APP>`, then `sam <command...>`
+- Cleanup all resources: `npm run cleanup`
 
 ## Resources
 
