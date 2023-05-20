@@ -1,4 +1,4 @@
-# aws cloudformation create-stack --stack-name vpc --template-body file://vpc.yaml --profile root
+Transform: AWS::Serverless-2016-10-31
 
 Description:  This template deploys a VPC, with a pair of public and private subnets spread
   across two Availability Zones. It deploys an internet gateway, with a default
