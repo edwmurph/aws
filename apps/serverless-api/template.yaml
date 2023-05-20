@@ -45,8 +45,6 @@ Resources:
       Handler: index.handler
       Runtime: nodejs18.x
       Role: !GetAtt LambdaRole.Arn
-      Architectures:
-        - x86_64
       Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:14
       Events:

@@ -26,26 +26,14 @@ Resources:
       ContentBasedDeduplication: true
 
   Lambda:
-    Type: AWS::Lambda::Function
+    Type: AWS::Serverless::Function
     Properties:
+      CodeUri: code/
       Handler: index.handler
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Role: !GetAtt LambdaRole.Arn
       ReservedConcurrentExecutions: 1
       Timeout: 30
-      Code:
-        ZipFile: |
-          exports.handler = async function(event) {
-            const wait = ( ms ) => new Promise( r => setTimeout( r, ms ) );
-            const events = event.Records.map( record => record.body );
-            console.log('start', events);
-            await wait(10e3);
-            console.log('stop', events);
-            return {
-              statusCode: 200,
-              body: JSON.stringify('Hello from Lambda!'),
-            };
-          };
 
   EventSourceMapping:
     Type: AWS::Lambda::EventSourceMapping
