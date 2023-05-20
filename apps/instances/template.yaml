@@ -1,3 +1,5 @@
+Transform: AWS::Serverless-2016-10-31
+
 Description: Deploys instances
 
 Parameters:
@@ -17,8 +19,8 @@ Resources:
       ImageId: ami-08333bccc35d71140
       KeyName: my-key-pair
       SecurityGroupIds:
-        - !ImportValue VPC-SSHAccess
-      SubnetId: !ImportValue VPC-PublicSubnet1
+        - !ImportValue vpc-SSHAccess
+      SubnetId: !ImportValue vpc-PublicSubnet1
       UserData:
         Fn::Base64: !Ref UserData
 

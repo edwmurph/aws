@@ -2,7 +2,7 @@ version = 0.1
 
 [default]
 [default.global.parameters]
-stack_name = "serverless-api"
+stack_name = "instances"
 
 [default.build.parameters]
 cached = true
@@ -15,11 +15,10 @@ lint = true
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
-s3_prefix = "serverless-api"
+s3_prefix = "instances"
 region = "us-east-2"
 profile = "edwmurph"
 image_repositories = []
-parameter_overrides = "StageName=\"api\""
 
 [default.package.parameters]
 resolve_s3 = true
