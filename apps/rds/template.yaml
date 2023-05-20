@@ -1,3 +1,5 @@
+Transform: AWS::Serverless-2016-10-31
+
 Description: deploys an RDS instance
 
 Resources:
@@ -6,12 +8,12 @@ Resources:
     Properties:
       GroupName: RDSAccess
       GroupDescription: "Allows RDS Ingress from within the VPC"
-      VpcId: !ImportValue VPC-VPC
+      VpcId: !ImportValue vpc-VPC
       SecurityGroupIngress:
         - FromPort: 5432
           ToPort: 5432
           IpProtocol: tcp
-          CidrIp: !ImportValue VPC-VPCCIDR
+          CidrIp: !ImportValue vpc-VPCCIDR
 
   RDS:
     Type: AWS::RDS::DBInstance
@@ -22,7 +24,7 @@ Resources:
       Engine: postgres
       MasterUsername: postgres
       MasterUserPassword: postgres
-      DBSubnetGroupName: !ImportValue VPC-PrivateSubnetGroup
+      DBSubnetGroupName: !ImportValue vpc-PrivateSubnetGroup
       VPCSecurityGroups:
         - !Ref RDSAccess
 

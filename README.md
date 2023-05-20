@@ -1,4 +1,4 @@
-# aws
+# sam
 
 my collection of SAM applications
 

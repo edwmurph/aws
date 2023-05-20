@@ -1,3 +1,5 @@
+Transform: AWS::Serverless-2016-10-31
+
 Description: Provisions an SQS FIFO queue with a Lambda that processes items one at a time
 
 Resources:
