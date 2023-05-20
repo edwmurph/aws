@@ -94,7 +94,7 @@ Resources:
 Outputs:
   HelloApi:
     Description: API Gateway endpoint URL for Hello function
-    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/hello/
+    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/hello
   HelloFunction:
     Description: Hello Lambda Function ARN
     Value: !GetAtt HelloFunction.Arn
