@@ -32,8 +32,6 @@ Resources:
           AttributeType: S
         - AttributeName: sales
           AttributeType: N
-        - AttributeName: num_songs
-          AttributeType: N
       KeySchema:
         - AttributeName: artist
           KeyType: HASH
@@ -51,17 +49,6 @@ Resources:
             NonKeyAttributes:
               - albumn
               - num_songs
-        - IndexName: gsi-num_songs-sales
-          KeySchema:
-            - AttributeName: num_songs
-              KeyType: HASH
-            - AttributeName: sales
-              KeyType: RANGE
-          Projection:
-            ProjectionType: INCLUDE
-            NonKeyAttributes:
-              - albumn
-              - artist
       LocalSecondaryIndexes:
         - IndexName: lsi-artist-sales
           KeySchema:
@@ -82,6 +69,48 @@ Resources:
       TableName: !Ref AlbumnsTable
       Items: >
         [
+          {
+              "albumn" : "Kind of Blue",
+              "artist" : "Miles Davis",
+              "sales" : 1,
+              "num_songs" : 20
+          },
+          {
+              "albumn" : "Abbey Road",
+              "artist" : "Beatles",
+              "sales" : 3,
+              "num_songs" : 3
+          },
+          {
+              "albumn" : "Pet Sounds",
+              "artist" : "Beach Boys",
+              "sales" : 18,
+              "num_songs" : 11
+          },
+          {
+              "albumn" : "Rumours",
+              "artist" : "Fleetwood Mac",
+              "sales" : 9,
+              "num_songs" : 10
+          },
+          {
+              "albumn" : "What's Going On",
+              "artist" : "Marvin Gaye",
+              "sales" : 11,
+              "num_songs" : 12
+          },
+          {
+              "albumn" : "Dark Side of the Moon",
+              "artist" : "Pink Floyd",
+              "sales" : 14,
+              "num_songs" : 1
+          },
+          {
+              "albumn" : "Thriller",
+              "artist" : "Michael Jackson",
+              "sales" : 25,
+              "num_songs" : 6
+          },
           {
               "albumn" : "Revolver",
               "artist" : "Beatles",
