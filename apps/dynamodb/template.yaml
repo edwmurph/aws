@@ -1,0 +1,97 @@
+Transform: AWS::Serverless-2016-10-31
+
+Description: 'Deploys a DynamoDB table'
+
+Resources:
+  DynamoItems:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: ./code
+      Description: 'custom cloudformation resource used to add dynamodb items'
+      MemorySize: 256
+      Timeout: 300
+      Policies:
+        - Statement:
+            - Sid: DynampDB
+              Effect: "Allow"
+              Action:
+                - dynamodb:PutItem
+              Resource: !Sub "arn:aws:dynamodb:*:${AWS::AccountId}:table/*"
+
+  AlbumnsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: albumns
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: artist
+          AttributeType: S
+        - AttributeName: albumn
+          AttributeType: S
+        - AttributeName: sales
+          AttributeType: N
+        - AttributeName: num_songs
+          AttributeType: N
+      KeySchema:
+        - AttributeName: artist
+          KeyType: HASH
+        - AttributeName: albumn
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: gsi-sales-artist
+          KeySchema:
+            - AttributeName: sales
+              KeyType: HASH
+            - AttributeName: artist
+              KeyType: RANGE
+          Projection:
+            ProjectionType: INCLUDE
+            NonKeyAttributes:
+              - albumn
+              - num_songs
+        - IndexName: gsi-num_songs-sales
+          KeySchema:
+            - AttributeName: num_songs
+              KeyType: HASH
+            - AttributeName: sales
+              KeyType: RANGE
+          Projection:
+            ProjectionType: INCLUDE
+            NonKeyAttributes:
+              - albumn
+              - artist
+      LocalSecondaryIndexes:
+        - IndexName: lsi-artist-sales
+          KeySchema:
+            - AttributeName: artist
+              KeyType: HASH
+            - AttributeName: sales
+              KeyType: RANGE
+          Projection:
+            ProjectionType: INCLUDE
+            NonKeyAttributes:
+              - artist
+              - num_songs
+
+  AlbumnsDynamoItems:
+    Type: Custom::DynamoItems
+    Properties:
+      ServiceToken: !GetAtt DynamoItems.Arn
+      TableName: !Ref AlbumnsTable
+      Items: >
+        [
+          {
+              "albumn" : "Revolver",
+              "artist" : "Beatles",
+              "sales" : 8,
+              "num_songs" : 12
+          },
+          {
+              "albumn" : "Abbey Road",
+              "artist" : "Beatles",
+              "sales" : 2,
+              "num_songs" : 3
+          }
+        ]

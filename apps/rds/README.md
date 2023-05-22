@@ -1,3 +1,3 @@
 # rds
 
-Playground of RDS instances.
+RDS playground
