@@ -48,7 +48,6 @@ Resources:
             ProjectionType: INCLUDE
             NonKeyAttributes:
               - albumn
-              - num_songs
       LocalSecondaryIndexes:
         - IndexName: lsi-artist-sales
           KeySchema:
