@@ -1,3 +1,5 @@
+import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge';
+
 export const handler = async ( event, context ) => {
   console.log({ event, context });
 
@@ -10,6 +12,25 @@ export const handler = async ( event, context ) => {
   await wait( 10e3 );
 
   console.log( 'stop', events );
+
+  const client = new EventBridgeClient();
+
+  const command = new PutEventsCommand({
+    Entries: [
+      {
+        Time: new Date(),
+        Source: 'service',
+        Resources: [],
+        DetailType: 'response',
+        Detail: '{}',
+        EventBusName: 'EventBus'
+      }
+    ]
+  });
+
+  const response = await client.send( command );
+
+  console.log( 'response:', response );
 
   return {
     statusCode: 200,

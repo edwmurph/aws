@@ -3,6 +3,9 @@ Transform: AWS::Serverless-2016-10-31
 Description: Provisions an SQS FIFO queue with a Lambda that processes items one at a time
 
 Resources:
+
+  # IAM
+
   LambdaRole:
     Type: AWS::IAM::Role
     Properties:
@@ -15,15 +18,64 @@ Resources:
               Service:
                 - lambda.amazonaws.com
       ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
+
+  EventRuleRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - events.amazonaws.com
+                - sqs.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AllowLogging
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: "*"
+        - PolicyName: AllowSQS
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: "sqs:*"
+                Resource: !GetAtt Queue.Arn
+
+  # SQS
 
   Queue:
     Type: AWS::SQS::Queue
     Properties:
+      QueueName: fifo.fifo
       FifoQueue: true
       VisibilityTimeout: 30
       ContentBasedDeduplication: true
+
+  QueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref Queue
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: SQS:SendMessage
+            Resource: !GetAtt Queue.Arn
+
+  # LAMBDA
 
   Lambda:
     Type: AWS::Serverless::Function
@@ -43,6 +95,72 @@ Resources:
       FunctionName: !GetAtt Lambda.Arn
       # ScalingConfig:
       #   MaximumConcurrency: 2
+
+  # CLOUDWATCH
+
+  ResponseLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/events/responses
+
+  EventHistoryLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/events/event-history
+
+  # EVENT_BRIDGE
+
+  EventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: EventBus
+
+  EventBusDiscovery:
+    Type: AWS::EventSchemas::Discoverer
+    Properties:
+      CrossAccount: false
+      SourceArn: !GetAtt EventBus.Arn
+
+  RequestEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: !GetAtt EventBus.Arn
+      EventPattern:
+        source:
+          - me
+        detail-type:
+          - request
+      Targets:
+        - Arn: !GetAtt Queue.Arn
+          Id: queue
+          SqsParameters:
+            MessageGroupId: test
+
+  HistoryEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      RoleArn: !GetAtt EventRuleRole.Arn
+      EventBusName: !GetAtt EventBus.Arn
+      EventPattern:
+        account:
+          - !Sub "${AWS::AccountId}"
+      Targets:
+        - Arn: !GetAtt EventHistoryLogGroup.Arn
+          Id: history-log-group
+
+  ResponseEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      RoleArn: !GetAtt EventRuleRole.Arn
+      EventBusName: !GetAtt EventBus.Arn
+      EventPattern:
+        source:
+          - service
+        detail-type:
+          - response
+      Targets:
+        - Arn: !GetAtt ResponseLogGroup.Arn
+          Id: results-log-group
 
 Outputs:
   TestFIFOEndpoint:
