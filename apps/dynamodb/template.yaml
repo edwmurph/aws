@@ -25,6 +25,9 @@ Resources:
     Properties:
       TableName: albumns
       BillingMode: PAY_PER_REQUEST
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
       AttributeDefinitions:
         - AttributeName: artist
           AttributeType: S
@@ -108,7 +111,8 @@ Resources:
               "albumn" : "Thriller",
               "artist" : "Michael Jackson",
               "sales" : 25,
-              "num_songs" : 6
+              "num_songs" : 6,
+              "ttl": 1684842962
           },
           {
               "albumn" : "Revolver",
