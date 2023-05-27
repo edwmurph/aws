@@ -64,6 +64,22 @@ Resources:
             Path: /fx-payments
             Method: POST
 
+  PaymentSQSBridge:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: payment-sqs-bridge/
+      Handler: index.handler
+      Runtime: nodejs16.x
+      Timeout: 300
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - Statement:
+            - Sid: SQSSendMessage
+              Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: !Sub "arn:aws:sqs:*:${AWS::AccountId}:*"
+
   FxPaymentsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -75,6 +91,11 @@ Resources:
       KeySchema:
         - AttributeName: paymentId
           KeyType: HASH
+
+  NewFxPaymentQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: NewFxPaymentQueue
 
 Outputs:
   GetFxQuoteApi:

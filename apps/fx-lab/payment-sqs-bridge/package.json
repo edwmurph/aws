@@ -1,0 +1,12 @@
+{
+  "name": "payment-sqs-bridge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint . --ext .mjs"
+  },
+  "devDependencies": {
+    "@edwmurph/eslint-config": "5.0.2"
+  }
+}
