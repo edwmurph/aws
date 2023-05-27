@@ -1,0 +1,28 @@
+Transform: AWS::Serverless-2016-10-31
+
+Description: 'Creates a custom resource for adding items to dynamodb table'
+
+Resources:
+  DynamoItems:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: ./code
+      Description: 'custom cloudformation resource used to add dynamodb items'
+      MemorySize: 256
+      Timeout: 300
+      Policies:
+        - Statement:
+            - Sid: DynampDB
+              Effect: "Allow"
+              Action:
+                - dynamodb:PutItem
+              Resource: !Sub "arn:aws:dynamodb:*:${AWS::AccountId}:table/*"
+
+Outputs:
+  DynamoItems:
+    Description: Dynamo Items Custom Resource
+    Value: !GetAtt DynamoItems.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-DynamoItems"

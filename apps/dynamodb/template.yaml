@@ -3,23 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: 'Deploys a DynamoDB table'
 
 Resources:
-  DynamoItems:
-    Type: 'AWS::Serverless::Function'
-    Properties:
-      Handler: index.handler
-      Runtime: nodejs18.x
-      CodeUri: ./code
-      Description: 'custom cloudformation resource used to add dynamodb items'
-      MemorySize: 256
-      Timeout: 300
-      Policies:
-        - Statement:
-            - Sid: DynampDB
-              Effect: "Allow"
-              Action:
-                - dynamodb:PutItem
-              Resource: !Sub "arn:aws:dynamodb:*:${AWS::AccountId}:table/*"
-
   AlbumnsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -67,7 +50,7 @@ Resources:
   AlbumnsDynamoItems:
     Type: Custom::DynamoItems
     Properties:
-      ServiceToken: !GetAtt DynamoItems.Arn
+      ServiceToken: !ImportValue dynamo-items-DynamoItems
       TableName: !Ref AlbumnsTable
       Items: >
         [
