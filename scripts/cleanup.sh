@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for STACK in fifo rds instances serverless-api vpc; do
+for STACK in fx-lab fargate dynamodb fifo rds instances serverless-api dynamo-items vpc; do
   echo "deleting $STACK..."
 
   sleep 2
