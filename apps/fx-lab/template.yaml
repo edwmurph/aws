@@ -8,20 +8,6 @@ Parameters:
     Default: api
 
 Resources:
-  LambdaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-      AssumeRolePolicyDocument:
-        Statement:
-          - Action:
-              - sts:AssumeRole
-            Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-
   Api:
     Type: AWS::Serverless::Api
     Properties:
@@ -33,7 +19,6 @@ Resources:
       CodeUri: get-fx-quote/
       Handler: index.handler
       Runtime: nodejs18.x
-      Role: !GetAtt LambdaRole.Arn
       Events:
         ApiGatewayEvent:
           Type: Api
@@ -70,15 +55,24 @@ Resources:
       CodeUri: payment-sqs-bridge/
       Handler: index.handler
       Runtime: nodejs16.x
-      Timeout: 300
+      Timeout: 30
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         - Statement:
-            - Sid: SQSSendMessage
+            - Sid: SQS
               Effect: Allow
               Action:
-                - sqs:SendMessage
+                - sqs:*
               Resource: !Sub "arn:aws:sqs:*:${AWS::AccountId}:*"
+        - Statement:
+          - Sid: DynamoDBStreamsPermissions
+            Effect: Allow
+            Action:
+              - dynamodb:GetShardIterator
+              - dynamodb:DescribeStream
+              - dynamodb:GetRecords
+              - dynamodb:ListStreams
+            Resource: "*"
 
   FxPaymentsTable:
     Type: AWS::DynamoDB::Table
@@ -91,11 +85,22 @@ Resources:
       KeySchema:
         - AttributeName: paymentId
           KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
 
   NewFxPaymentQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: NewFxPaymentQueue
+
+  EventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 1
+      EventSourceArn: !GetAtt FxPaymentsTable.StreamArn
+      FunctionName: !GetAtt PaymentSQSBridge.Arn
+      Enabled: True
+      StartingPosition: LATEST
 
 Outputs:
   GetFxQuoteApi:

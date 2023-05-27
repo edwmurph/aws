@@ -2,6 +2,7 @@ const AWS = require('aws-sdk');
 const sqs = new AWS.SQS();
 
 exports.handler = async ( event, context ) => {
+  console.log( JSON.stringify( event ) );
   const awsAccountId = context.invokedFunctionArn.split(':')[4];
   const region_code = process.env.AWS_REGION;
   console.log( 'AccountID:  ' + awsAccountId );

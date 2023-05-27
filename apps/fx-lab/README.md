@@ -14,7 +14,7 @@ awscurl \
   --service execute-api \
   -X POST \
   -d '{"destinationCurrency": "GBP","amount": 1000,"payeeName": "John","beneficiaryName": "Alex","beneficiaryBankName": "HSBC","beneficiaryAccountNo": "1234","quoteId": "1001"}' \
-  https://yks2ctrle9.execute-api.us-east-2.amazonaws.com/api/fx-payments
+  https://z5md5g3jc2.execute-api.us-east-2.amazonaws.com/api/fx-payments
 
 
 ### payment-sqs-bridge test event
