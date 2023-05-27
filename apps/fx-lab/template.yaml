@@ -42,6 +42,40 @@ Resources:
             Path: /quotes
             Method: POST
 
+  CreatePayments:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: create-payments/
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Timeout: 300
+      Policies:
+        - Statement:
+            - Sid: DynampDB
+              Effect: "Allow"
+              Action:
+                - dynamodb:PutItem
+              Resource: !Sub "arn:aws:dynamodb:*:${AWS::AccountId}:table/*"
+      Events:
+        ApiGatewayEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /fx-payments
+            Method: POST
+
+  FxPaymentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: fx-payments
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: paymentId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: paymentId
+          KeyType: HASH
+
 Outputs:
   GetFxQuoteApi:
     Description: API Gateway endpoint URL for GetFxQuote function

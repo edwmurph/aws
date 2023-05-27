@@ -1,0 +1,13 @@
+{
+  "name": "create-payments",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --ext .mjs"
+  },
+  "devDependencies": {
+    "@edwmurph/eslint-config": "5.0.2"
+  }
+}
