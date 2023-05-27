@@ -1,0 +1,48 @@
+Transform: AWS::Serverless-2016-10-31
+
+Description: fx quote lab
+
+Parameters:
+  StageName:
+    Type: String
+    Default: api
+
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref StageName
+
+  GetFxQuote:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get-fx-quote/
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Role: !GetAtt LambdaRole.Arn
+      Events:
+        ApiGatewayEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /quotes
+            Method: POST
+
+Outputs:
+  GetFxQuoteApi:
+    Description: API Gateway endpoint URL for GetFxQuote function
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/quotes
