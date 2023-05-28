@@ -6,13 +6,17 @@ Parameters:
   ClusterName:
     Type: String
     Description: Name of the ECS cluster
-    Default: Nginx
+    Default: echo
   ContainerPort:
     Type: Number
     Description: Port on which the container listens
     Default: 80
 
 Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref ClusterName
 
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -38,9 +42,15 @@ Resources:
       NetworkMode: awsvpc
       ContainerDefinitions:
         - Name: !Ref ClusterName
-          Image: nginx:latest
+          Image: ghcr.io/edwmurph/echo:latest
           PortMappings:
             - ContainerPort: !Ref ContainerPort
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Sub ${AWS::Region}
+              awslogs-stream-prefix: !Ref ClusterName
 
   Cluster:
     Type: AWS::ECS::Cluster
@@ -94,6 +104,7 @@ Resources:
         - !ImportValue vpc-WebIngress
 
   Listener:
+    DependsOn: Cluster
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref LoadBalancer
