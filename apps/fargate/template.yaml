@@ -123,3 +123,8 @@ Resources:
       TargetType: ip
       HealthCheckIntervalSeconds: 30
       HealthCheckPath: /
+
+Outputs:
+  LoadBalancerDNS:
+    Description: The DNS name for the load balancer
+    Value: !GetAtt LoadBalancer.DNSName
