@@ -15,62 +15,49 @@ Parameters:
     Description: Master password for the database
     Type: String
     Default: postgres
-  DBInstanceClass:
-    NoEcho: true
-    Description: Instance class for postgres
-    Type: String
-    Default: db.t3.micro
 
 Resources:
-  EnhancedMonitoringRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      RoleName: EnhancedMonitoringRole
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: monitoring.rds.amazonaws.com
-            Action: 'sts:AssumeRole'
-      ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole'
-
-  PrimaryInstance:
-    Type: 'AWS::RDS::DBInstance'
+  PostgresCluster:
+    Type: 'AWS::RDS::DBCluster'
     DeletionPolicy: Delete
     Properties:
-      AllocatedStorage: 20
       AutoMinorVersionUpgrade: true
       BackupRetentionPeriod: 1
-      DBInstanceClass: !Ref DBInstanceClass
-      DBInstanceIdentifier: !Ref DBName
-      DBName: !Ref DBName
+      DatabaseName: !Ref DBName
+      DBClusterIdentifier: !Ref DBName
       DBSubnetGroupName: !ImportValue vpc-PrivateSubnetGroup
-      DeleteAutomatedBackups: true
       DeletionProtection: false
-      EnablePerformanceInsights: true
-      Engine: postgres
+      Engine: aurora-postgresql
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
-      MonitoringInterval: 60
-      MonitoringRoleArn: !GetAtt EnhancedMonitoringRole.Arn
-      MultiAZ: true
       NetworkType: IPV4
-      PerformanceInsightsRetentionPeriod: 7
+      Port: 5432
       PreferredBackupWindow: '06:00-07:00'
       PreferredMaintenanceWindow: 'Sun:07:00-Sun:08:00'
-      PubliclyAccessible: false
+      ServerlessV2ScalingConfiguration:
+        MinCapacity: 0.5
+        MaxCapacity: 1.0
       StorageEncrypted: true
-      StorageType: gp3
-      VPCSecurityGroups:
+      VpcSecurityGroupIds:
         - !Ref SecurityGroup
+
+  PrimaryInstance:
+   Type: 'AWS::RDS::DBInstance'
+   DependsOn: PostgresCluster
+   DeletionPolicy: Delete
+   Properties:
+     DBClusterIdentifier: !Ref DBName
+     DBInstanceClass: db.serverless
+     Engine: aurora-postgresql
 
   ReplicaInstance:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Delete
+    DependsOn: PostgresCluster
     Properties:
-      DBInstanceClass: !Ref DBInstanceClass
+      DBClusterIdentifier: !Ref DBName
+      DBInstanceClass: db.serverless
+      Engine: aurora-postgresql
       SourceDBInstanceIdentifier: !Ref PrimaryInstance
 
   SecurityGroup:
@@ -86,12 +73,12 @@ Resources:
 
 Outputs:
   PrimaryEndpoint:
-    Description: Endpoint URL of the primary RDS instance
-    Value: !GetAtt PrimaryInstance.Endpoint.Address
+    Description: Primary Endpoint
+    Value: !GetAtt PostgresCluster.Endpoint.Address
     Export:
       Name: !Sub "${AWS::StackName}-PrimaryEndpoint"
-  ReplicaEndpoint:
-    Description: Endpoint URL of the replica RDS instance
-    Value: !GetAtt ReplicaInstance.Endpoint.Address
+  ReadEndpoint:
+    Description: Read Endpoint
+    Value: !GetAtt PostgresCluster.ReadEndpoint.Address
     Export:
-      Name: !Sub "${AWS::StackName}-ReplicaEndpoint"
+      Name: !Sub "${AWS::StackName}-ReadEndpoint"
