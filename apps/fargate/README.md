@@ -1,3 +1,0 @@
-# fargate
-
-Fargate playground

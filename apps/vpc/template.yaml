@@ -202,6 +202,15 @@ Resources:
       GroupDescription: "Security group with no ingress rule"
       VpcId: !Ref VPC
 
+  AllIngress:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VPC
+      GroupDescription: Allow all ingress traffic
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+
   WebIngress:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -248,11 +257,6 @@ Outputs:
     Value: !Ref VPCCIDR
     Export:
       Name: !Sub "${AWS::StackName}-VPCCIDR"
-  WebIngress:
-    Description: The id of the web ingress security group
-    Value: !Ref WebIngress
-    Export:
-      Name: !Sub "${AWS::StackName}-WebIngress"
   PublicSubnet1:
     Description: The public subnet in the 1st Availability Zone
     Value: !Ref PublicSubnet1
@@ -283,3 +287,13 @@ Outputs:
     Value: !Ref SSHAccess
     Export:
       Name: !Sub "${AWS::StackName}-SSHAccess"
+  WebIngress:
+    Description: The id of the web ingress security group
+    Value: !Ref WebIngress
+    Export:
+      Name: !Sub "${AWS::StackName}-WebIngress"
+  AllIngress:
+    Description: The id of the all ingress security group
+    Value: !Ref AllIngress
+    Export:
+      Name: !Sub "${AWS::StackName}-AllIngress"

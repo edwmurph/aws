@@ -1,0 +1,161 @@
+Transform: AWS::Serverless-2016-10-31
+
+Description: 'Deploys an ECS cluster'
+
+Parameters:
+  ClusterName:
+    Type: String
+    Description: Name of the ECS cluster
+    Default: echo
+  ContainerPort:
+    Type: Number
+    Description: Port on which the container listens
+    Default: 80
+
+Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref ClusterName
+
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ClusterName}-TaskExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref ECSRole
+
+  ECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ECSRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+                - ecs.amazonaws.com
+                - ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+
+  Public1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0f627fcf49264af70
+      KeyName: my-key-pair
+      IamInstanceProfile: !Ref InstanceProfile
+      SecurityGroupIds:
+        - !ImportValue vpc-SSHAccess
+        - !ImportValue vpc-AllIngress
+      SubnetId: !ImportValue vpc-PublicSubnet1
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo 'ECS_CLUSTER=${ClusterName}' >> /etc/ecs/ecs.config
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Ref ClusterName
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      Cpu: 256
+      Memory: 400
+      NetworkMode: bridge
+      TaskRoleArn: !Ref ECSRole
+      RequiresCompatibilities:
+        - EC2
+      ContainerDefinitions:
+        - Name: !Ref ClusterName
+          Image: ghcr.io/edwmurph/echo:latest
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Sub ${AWS::Region}
+              awslogs-stream-prefix: !Ref ClusterName
+
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: Listener
+    Properties:
+      Cluster: !Ref ClusterName
+      ServiceName: !Sub ${ClusterName}-Service
+      TaskDefinition: !Ref TaskDefinition
+      LaunchType: EC2
+      DesiredCount: 2
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      LoadBalancers:
+        - TargetGroupArn: !Ref TargetGroup
+          ContainerPort: !Ref ContainerPort
+          ContainerName: !Ref ClusterName
+
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ALB security group
+      VpcId: !ImportValue vpc-VPC
+
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - !ImportValue vpc-PublicSubnet1
+        - !ImportValue vpc-PublicSubnet2
+      SecurityGroups:
+        - !ImportValue vpc-WebIngress
+
+  Listener:
+    DependsOn: Cluster
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: HTTP
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: !Ref ContainerPort
+      Protocol: HTTP
+      VpcId: !ImportValue vpc-VPC
+      TargetType: instance
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: /
+
+Outputs:
+  LoadBalancerDNS:
+    Description: The DNS name for the load balancer
+    Value: !GetAtt LoadBalancer.DNSName
