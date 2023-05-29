@@ -24,17 +24,17 @@ Resources:
       UserData:
         Fn::Base64: !Ref UserData
 
-  Private1:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: t2.micro
-      ImageId: ami-08333bccc35d71140
-      KeyName: my-key-pair
-      SecurityGroupIds:
-        - !ImportValue vpc-SSHAccess
-      SubnetId: !ImportValue vpc-PrivateSubnet1
-      UserData:
-        Fn::Base64: !Ref UserData
+  # Private1:
+  #   Type: AWS::EC2::Instance
+  #   Properties:
+  #     InstanceType: t2.micro
+  #     ImageId: ami-08333bccc35d71140
+  #     KeyName: my-key-pair
+  #     SecurityGroupIds:
+  #       - !ImportValue vpc-SSHAccess
+  #     SubnetId: !ImportValue vpc-PrivateSubnet1
+  #     UserData:
+  #       Fn::Base64: !Ref UserData
 
 Outputs:
   Public1Ip:
