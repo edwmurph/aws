@@ -17,8 +17,22 @@ Parameters:
     Default: postgres
 
 Resources:
+  EnhancedMonitoringRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: EnhancedMonitoringRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: monitoring.rds.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole'
+
   PostgresCluster:
-    Type: 'AWS::RDS::DBCluster'
+    Type: AWS::RDS::DBCluster
     DeletionPolicy: Delete
     Properties:
       AutoMinorVersionUpgrade: true
@@ -32,8 +46,8 @@ Resources:
       MasterUserPassword: !Ref DBPassword
       NetworkType: IPV4
       Port: 5432
-      PreferredBackupWindow: '06:00-07:00'
-      PreferredMaintenanceWindow: 'Sun:07:00-Sun:08:00'
+      PreferredBackupWindow: 06:00-07:00
+      PreferredMaintenanceWindow: Sun:07:00-Sun:08:00
       ServerlessV2ScalingConfiguration:
         MinCapacity: 0.5
         MaxCapacity: 1.0
@@ -42,13 +56,17 @@ Resources:
         - !Ref SecurityGroup
 
   PrimaryInstance:
-   Type: 'AWS::RDS::DBInstance'
-   DependsOn: PostgresCluster
-   DeletionPolicy: Delete
-   Properties:
-     DBClusterIdentifier: !Ref DBName
-     DBInstanceClass: db.serverless
-     Engine: aurora-postgresql
+    Type: AWS::RDS::DBInstance
+    DependsOn: PostgresCluster
+    DeletionPolicy: Delete
+    Properties:
+      DBClusterIdentifier: !Ref DBName
+      DBInstanceClass: db.serverless
+      EnablePerformanceInsights: true
+      Engine: aurora-postgresql
+      MonitoringInterval: 60
+      MonitoringRoleArn: !GetAtt EnhancedMonitoringRole.Arn
+      PerformanceInsightsRetentionPeriod: 7
 
   ReplicaInstance:
     Type: AWS::RDS::DBInstance
@@ -57,11 +75,14 @@ Resources:
     Properties:
       DBClusterIdentifier: !Ref DBName
       DBInstanceClass: db.serverless
+      EnablePerformanceInsights: true
       Engine: aurora-postgresql
-      SourceDBInstanceIdentifier: !Ref PrimaryInstance
+      MonitoringInterval: 60
+      MonitoringRoleArn: !GetAtt EnhancedMonitoringRole.Arn
+      PerformanceInsightsRetentionPeriod: 7
 
   SecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
+    Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for Postgres
       VpcId: !ImportValue vpc-VPC
