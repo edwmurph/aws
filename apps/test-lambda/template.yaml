@@ -1,0 +1,41 @@
+Transform: AWS::Serverless-2016-10-31
+
+Description: Test Lambda
+
+Globals:
+  Function:
+    Timeout: 3
+    Tracing: Active
+  Api:
+    TracingEnabled: true
+
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: code/
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Role: !GetAtt LambdaRole.Arn
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:14
+
+Outputs:
+  Function:
+    Description: Test Function ARN
+    Value: !GetAtt Function.Arn
