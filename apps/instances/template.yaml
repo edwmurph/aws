@@ -12,12 +12,34 @@ Parameters:
       curl https://raw.githubusercontent.com/edwmurph/configs/master/dotfiles/ec2-bashrc >> /home/ec2-user/.bashrc
 
 Resources:
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref InstanceRole
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
   Public1:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
       ImageId: ami-08333bccc35d71140
       KeyName: my-key-pair
+      IamInstanceProfile: !Ref InstanceProfile
       SecurityGroupIds:
         - !ImportValue vpc-SSHAccess
       SubnetId: !ImportValue vpc-PublicSubnet1
