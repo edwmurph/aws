@@ -13,6 +13,24 @@ Parameters:
     Default: 80
 
 Resources:
+  TestParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: test
+      Type: String
+      Value: test-parameter-value-1
+
+  TestSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: test
+      Description: 'This secret has a dynamically generated secret password.'
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "test-user"}'
+        GenerateStringKey: password
+        PasswordLength: 30
+        ExcludeCharacters: '"@/\'
+
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -55,6 +73,8 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
 
   Public1:
     Type: AWS::EC2::Instance
@@ -88,6 +108,9 @@ Resources:
           Image: ghcr.io/edwmurph/echo:latest
           PortMappings:
             - ContainerPort: !Ref ContainerPort
+          Environment:
+            - Name: AWS_REGION
+              Value: !Sub ${AWS::Region}
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -111,7 +134,7 @@ Resources:
       DesiredCount: 2
       DeploymentConfiguration:
         MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MinimumHealthyPercent: 50
       LoadBalancers:
         - TargetGroupArn: !Ref TargetGroup
           ContainerPort: !Ref ContainerPort
