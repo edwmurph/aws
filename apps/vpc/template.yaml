@@ -257,6 +257,11 @@ Outputs:
     Value: !Ref VPCCIDR
     Export:
       Name: !Sub "${AWS::StackName}-VPCCIDR"
+  MyKeyPair:
+    Description: My key pair
+    Value: !Ref MyKeyPair
+    Export:
+      Name: !Sub "${AWS::StackName}-MyKeyPair"
   PublicSubnet1:
     Description: The public subnet in the 1st Availability Zone
     Value: !Ref PublicSubnet1
