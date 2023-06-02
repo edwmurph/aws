@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for STACK in eks fx-lab fargate-spot ecs dynamodb fifo instances serverless-api dynamo-items postgres-serverless postgres vpc; do
+for STACK in eks fx-lab fargate-spot ecs dynamodb fifo instances serverless-api dynamo-items postgres-serverless postgres oidc vpc; do
   echo "deleting $STACK..."
 
   sleep 2
