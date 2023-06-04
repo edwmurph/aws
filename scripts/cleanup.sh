@@ -1,6 +1,21 @@
 #!/bin/bash
 
-for STACK in eks fx-lab fargate-spot ecs dynamodb fifo instances serverless-api dynamo-items postgres-serverless postgres oidc vpc; do
+STACKS='eks
+fx-lab
+fargate-spot
+ecs
+dynamodb
+fifo
+instances
+serverless-api
+dynamo-items
+postgres-serverless
+postgres
+ses
+oidc
+vpc'
+
+for STACK in $STACKS; do
   echo "deleting $STACK..."
 
   sleep 2

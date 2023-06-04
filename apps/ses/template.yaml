@@ -1,0 +1,30 @@
+Transform: AWS::Serverless-2016-10-31
+
+Description: 'SES resources'
+
+Resources:
+  EmailIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: edwardmurphy.net
+
+  Route53DEKIM:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: Z02863171422XQ4B5C1J5
+      RecordSets:
+        - Name: !GetAtt EmailIdentity.DkimDNSTokenName1
+          Type: CNAME
+          TTL: 3600
+          ResourceRecords:
+            - !GetAtt EmailIdentity.DkimDNSTokenValue1
+        - Name: !GetAtt EmailIdentity.DkimDNSTokenName2
+          Type: CNAME
+          TTL: 3600
+          ResourceRecords:
+            - !GetAtt EmailIdentity.DkimDNSTokenValue2
+        - Name: !GetAtt EmailIdentity.DkimDNSTokenName3
+          Type: CNAME
+          TTL: 3600
+          ResourceRecords:
+            - !GetAtt EmailIdentity.DkimDNSTokenValue3
