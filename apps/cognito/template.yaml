@@ -42,6 +42,29 @@ Resources:
       UsernameConfiguration:
         CaseSensitive: True
 
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      AllowedOAuthFlowsUserPoolClient: true
+      SupportedIdentityProviders:
+        - COGNITO
+      CallbackURLs:
+        - https://echo.edwardmurphy.net/oauth2/callback
+      ReadAttributes:
+        - email
+      AllowedOAuthFlows:
+        - code
+        - implicit
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+
   UserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
