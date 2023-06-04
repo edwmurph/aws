@@ -143,7 +143,7 @@ Resources:
       EventBusName: !GetAtt EventBus.Arn
       EventPattern:
         account:
-          - !Sub "${AWS::AccountId}"
+          - !Ref AWS::AccountId
       Targets:
         - Arn: !GetAtt EventHistoryLogGroup.Arn
           Id: history-log-group

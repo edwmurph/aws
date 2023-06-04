@@ -8,6 +8,6 @@ for STACK in eks fx-lab fargate-spot ecs dynamodb fifo instances serverless-api 
   sam delete \
     --stack-name $STACK \
     --profile edwmurph \
-    --region us-east-2 \
-    --no-prompts
+    --no-prompts \
+    --region us-east-1
 done

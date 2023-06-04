@@ -16,7 +16,7 @@ capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
 s3_prefix = "fx-lab"
-region = "us-east-2"
+region = "us-east-1"
 profile = "edwmurph"
 image_repositories = []
 parameter_overrides = "StageName=\"api\""

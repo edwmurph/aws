@@ -46,7 +46,6 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub '${EKSCluster}-pod-role'
-      Path: /
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
         - arn:aws:iam::aws:policy/SecretsManagerReadWrite

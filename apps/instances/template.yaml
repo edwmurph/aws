@@ -30,14 +30,13 @@ Resources:
                 - ec2.amazonaws.com
             Action:
               - sts:AssumeRole
-      Path: /
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
   Public1:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-08333bccc35d71140
+      ImageId: ami-0715c1897453cabd1
       KeyName: my-key-pair
       IamInstanceProfile: !Ref InstanceProfile
       SecurityGroupIds:
@@ -50,7 +49,7 @@ Resources:
   #   Type: AWS::EC2::Instance
   #   Properties:
   #     InstanceType: t2.micro
-  #     ImageId: ami-08333bccc35d71140
+  #     ImageId: ami-0715c1897453cabd1
   #     KeyName: my-key-pair
   #     SecurityGroupIds:
   #       - !ImportValue vpc-SSHAccess

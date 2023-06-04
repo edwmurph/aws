@@ -41,7 +41,7 @@ Resources:
     Properties:
       RoleName: !Sub ${ClusterName}-TaskExecutionRole
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Principal:
@@ -80,7 +80,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-0f627fcf49264af70
+      ImageId: ami-04d9730eb75fb5301
       KeyName: my-key-pair
       IamInstanceProfile: !Ref InstanceProfile
       SecurityGroupIds:
