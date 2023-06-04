@@ -31,7 +31,7 @@ Resources:
 
 Outputs:
   EmailIdentity:
-    Description: EmailIdentity ARN
+    Description: EmailIdentity
     Value: !Ref EmailIdentity
     Export:
       Name: !Sub "${AWS::StackName}-EmailIdentity"

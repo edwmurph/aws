@@ -45,5 +45,5 @@ Resources:
   UserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
-      Domain: edwardmurphy
+      Domain: !Select [2, !Split ['/', !Ref AWS::StackId]]
       UserPoolId: !Ref UserPool
