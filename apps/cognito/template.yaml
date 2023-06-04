@@ -41,3 +41,9 @@ Resources:
         - email
       UsernameConfiguration:
         CaseSensitive: True
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: edwardmurphy
+      UserPoolId: !Ref UserPool
