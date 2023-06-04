@@ -1,0 +1,43 @@
+Transform: AWS::Serverless-2016-10-31
+
+Description: 'Cognito resources'
+
+Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 2
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: False
+      AutoVerifiedAttributes:
+        - email
+      DeletionProtection: INACTIVE
+      EmailConfiguration:
+        EmailSendingAccount: DEVELOPER
+        From: !Sub
+          - 'edward@${EmailIdentity}'
+          - EmailIdentity: !ImportValue ses-EmailIdentity
+        SourceArn: !Sub
+          - 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${EmailIdentity}'
+          - EmailIdentity: !ImportValue ses-EmailIdentity
+      MfaConfiguration: 'OFF'
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+      Schema:
+        - AttributeDataType: String
+          Name: email
+          Required: True
+          DeveloperOnlyAttribute: False
+          Mutable: True
+      UsernameAttributes:
+        - email
+      UsernameConfiguration:
+        CaseSensitive: True

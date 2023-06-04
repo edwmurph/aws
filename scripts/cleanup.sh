@@ -11,6 +11,7 @@ serverless-api
 dynamo-items
 postgres-serverless
 postgres
+cognito
 ses
 oidc
 vpc'

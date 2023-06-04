@@ -28,3 +28,10 @@ Resources:
           TTL: 3600
           ResourceRecords:
             - !GetAtt EmailIdentity.DkimDNSTokenValue3
+
+Outputs:
+  EmailIdentity:
+    Description: EmailIdentity ARN
+    Value: !Ref EmailIdentity
+    Export:
+      Name: !Sub "${AWS::StackName}-EmailIdentity"
