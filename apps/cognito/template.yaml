@@ -68,5 +68,23 @@ Resources:
   UserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
-      Domain: !Select [2, !Split ['/', !Ref AWS::StackId]]
+      Domain: !Select [2, !Split ['/', !Ref AWS::StackId]] # use stack id as random number
       UserPoolId: !Ref UserPool
+
+  UserPoolAlias:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: edwardmurphy.net.
+      Name: auth.echo.edwardmurphy.net.
+      Type: A
+      Weight: 100
+      SetIdentifier: primary
+      AliasTarget:
+        DNSName: !GetAtt UserPoolDomain.CloudFrontDistribution
+        EvaluateTargetHealth: false
+        HostedZoneId: Z2FDTNDATAQYW2
+
+Outputs:
+  UserPoolClientId:
+    Description: The ID of the UserPoolClient
+    Value: !Ref UserPoolClient

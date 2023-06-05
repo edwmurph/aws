@@ -329,3 +329,8 @@ Outputs:
     Value: !Ref AllIngress
     Export:
       Name: !Sub "${AWS::StackName}-AllIngress"
+  CertificateARN:
+    Description: The id of the cert for edwardmurphy.net
+    Value: arn:aws:acm:us-east-1:899305035647:certificate/b16f6c1c-03dc-48d4-8223-f569b7818857
+    Export:
+      Name: !Sub "${AWS::StackName}-CertificateARN"
